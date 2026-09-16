@@ -1,0 +1,25 @@
+# Requirements — CERT Insider Threat BN Project
+# Install with: pip install -r requirements.txt
+
+# Core scientific stack
+numpy>=1.24
+pandas>=2.0
+scipy>=1.11
+
+# Bayesian Network & inference
+# (this project implements VE and MCMC from scratch, but pgmpy is
+#  used optionally for structure-learning comparison in Experiment 1)
+pgmpy>=0.1.25
+
+# Machine learning baselines
+scikit-learn>=1.3
+xgboost>=2.0
+
+# Visualisation
+matplotlib>=3.7
+networkx>=3.1
+seaborn>=0.13
+
+# LLM integration (optional — only needed if you have an API key)
+openai>=1.10                  # set OPENAI_API_KEY env var to enable
+google-generativeai>=0.5.0    # set GEMINI_API_KEY env var to enable

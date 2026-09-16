@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Antigravity Security — Probabilistic Threat Assessment & Math Inspector</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Vis.js Network Visualization -->
+  <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+
+  <!-- KaTeX LaTeX Math Renderer -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="dark-theme">
+
+  <!-- Top App Navigation Bar -->
+  <header class="top-nav">
+    <div class="nav-brand">
+      <i class="fa-solid me-2 fa-shield-halved brand-icon"></i>
+      <span class="brand-title">Antigravity Threat Intelligence</span>
+      <span class="badge badge-sub text-muted">35-Node Bayesian Network</span>
+    </div>
+
+    <div class="nav-tabs">
+      <button class="nav-tab active" data-tab="tab-network">
+        <i class="fa-solid fa-diagram-project"></i> Network DAG Trace
+      </button>
+      <button class="nav-tab" data-tab="tab-math">
+        <i class="fa-solid fa-calculator"></i> Step-by-Step Math Calculation
+      </button>
+      <button class="nav-tab" data-tab="tab-cpt">
+        <i class="fa-solid fa-table-cells"></i> CPT Parameters
+      </button>
+    </div>
+
+    <div class="nav-actions">
+      <div id="risk-badge" class="risk-badge risk-low">
+        <span class="risk-dot"></span>
+        <span id="risk-level-text">LOW RISK (16.5%)</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main App Layout (IDE Split View) -->
+  <div class="app-container">
+
+    <!-- LEFT SIDEBAR: Chat & Log Upload Panel (IDE Chat Window) -->
+    <aside class="sidebar-panel">
+      <div class="panel-header">
+        <h3><i class="fa-solid fa-comments"></i> Threat Analyst Assistant</h3>
+        <span class="badge badge-live"><i class="fa-solid fa-circle"></i> Live VE Engine</span>
+      </div>
+
+      <!-- Sample Selector Bar -->
+      <div class="sample-picker-box">
+        <label for="sample-select"><i class="fa-solid fa-vial"></i> Load Preset User Scenario:</label>
+        <select id="sample-select" class="form-select">
+          <option value="">-- Choose Sample User Log --</option>
+        </select>
+      </div>
+
+      <!-- Interactive Evidence Control Toggles -->
+      <div class="evidence-toggle-accordion">
+        <div class="accordion-header" id="evidence-accordion-btn">
+          <span><i class="fa-solid fa-sliders"></i> Active Evidence Toggles (<span id="active-ev-count">0</span>/21)</span>
+          <i class="fa-solid fa-chevron-down accordion-icon"></i>
+        </div>
+        <div class="accordion-body" id="evidence-checkbox-grid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Log Upload Zone -->
+      <div class="log-upload-zone">
+        <div class="upload-box" id="drop-zone">
+          <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+          <span>Drag & Drop system log CSV/JSON</span>
+          <button class="btn btn-secondary btn-sm mt-1" id="upload-btn">Browse Files</button>
+          <input type="file" id="file-input" accept=".csv,.json,.txt" hidden>
+        </div>
+        <button id="btn-run-analysis" class="btn btn-primary btn-block">
+          <i class="fa-solid fa-play"></i> Compute Threat Inference
+        </button>
+      </div>
+
+      <!-- Chat Response History Window -->
+      <div class="chat-window">
+        <div class="chat-message assistant-msg" id="chat-output">
+          <div class="msg-header">
+            <i class="fa-solid fa-robot assistant-avatar"></i>
+            <span class="agent-name">Antigravity LLM Security Agent</span>
+            <span class="time-stamp">Just now</span>
+          </div>
+          <div class="msg-content" id="report-content-body">
+            Welcome to the <strong>35-Node Bayesian Network Threat Inspector</strong>. Select a sample log scenario above or toggle evidence nodes to perform probabilistic inference and view exact step-by-step mathematical calculations.
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- RIGHT MAIN CANVAS: Tabbed Interface -->
+    <main class="main-canvas">
+
+      <!-- TAB 1: 35-Node Network DAG Visualization -->
+      <div class="canvas-tab active" id="tab-network">
+        <div class="canvas-toolbar">
+          <div class="toolbar-title">
+            <h4><i class="fa-solid fa-circle-nodes"></i> Interactive Bayesian Network Directed Acyclic Graph</h4>
+            <span class="text-muted text-sm">Nodes glow & highlight active threat propagation paths</span>
+          </div>
+          <div class="toolbar-controls">
+            <button class="btn btn-icon" id="btn-fit-graph" title="Reset Camera"><i class="fa-solid fa-expand"></i></button>
+            <button class="btn btn-icon" id="btn-physics-toggle" title="Toggle Physics Layout"><i class="fa-solid fa-atom"></i></button>
+          </div>
+        </div>
+
+        <!-- Vis.js Graph Canvas Container -->
+        <div id="network-container"></div>
+
+        <!-- Network Legend Bar -->
+        <div class="graph-legend">
+          <span class="legend-item"><span class="dot dot-layer1"></span> Layer 1: Observable Evidence (21)</span>
+          <span class="legend-item"><span class="dot dot-layer2"></span> Layer 2: Behavioral Indicators (9)</span>
+          <span class="legend-item"><span class="dot dot-layer3"></span> Layer 3: Threat Hypotheses (4)</span>
+          <span class="legend-item"><span class="dot dot-layer4"></span> Layer 4: Overall Risk (1)</span>
+        </div>
+      </div>
+
+      <!-- TAB 2: Step-by-Step Mathematical Calculation Page -->
+      <div class="canvas-tab" id="tab-math">
+        <div class="canvas-toolbar">
+          <div class="toolbar-title">
+            <h4><i class="fa-solid fa-square-root-variable"></i> Step-by-Step Mathematical Calculation Breakdown</h4>
+            <span class="text-muted text-sm">Full mathematical trace: Prior vector $\to$ Noisy-OR $\to$ Variable Elimination $\to$ Expected Utility</span>
+          </div>
+        </div>
+
+        <div class="math-trace-scroll-area" id="math-trace-container">
+          <div class="math-placeholder">
+            <i class="fa-solid fa-calculator placeholder-icon"></i>
+            <p>Run threat inference to inspect the full step-by-step mathematical calculation trace.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: CPT Parameters Inspector -->
+      <div class="canvas-tab" id="tab-cpt">
+        <div class="canvas-toolbar">
+          <div class="toolbar-title">
+            <h4><i class="fa-solid fa-table"></i> Expert Conditional Probability Tables & Noisy-OR Parameters</h4>
+          </div>
+        </div>
+
+        <div class="cpt-scroll-area" id="cpt-container">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- Custom App JS -->
+  <script src="js/app.js"></script>
+</body>
+</html>

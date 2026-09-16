@@ -1,0 +1,52 @@
+{
+  "user": "INSIDER_0004",
+  "day": "2026-02-05",
+  "risk": {
+    "posterior": {
+      "Low": 0.7338061922776874,
+      "Medium": 0.10147170131789163,
+      "High": 0.16472210640442098
+    },
+    "level": "Low",
+    "p_high": 0.16472210640442098
+  },
+  "threats": {
+    "DataExfiltration": {
+      "probability": 0.08183734765778622,
+      "description": "Data Exfiltration (data theft via USB/email/cloud)"
+    },
+    "UnauthorizedAccess": {
+      "probability": 0.05107511715636184,
+      "description": "Unauthorized Access (credential misuse / masquerade)"
+    },
+    "ITSabotage": {
+      "probability": 0.05121773225731509,
+      "description": "ITSabotage"
+    },
+    "IPTheft": {
+      "probability": 0.05818062434690819,
+      "description": "IPTheft"
+    }
+  },
+  "top_threat": "DataExfiltration",
+  "behavioral_indicators": {
+    "AuthAnomaly": 0.028203781512605053,
+    "DataAccessAnomaly": 0.019959058341862845,
+    "DataMovementAnomaly": 0.019805527123848532,
+    "CommunicationAnomaly": 0.030252100840336138,
+    "RemovableMediaAnomaly": 0.015046059365404263,
+    "TimeBasedAnomaly": 0.026155462184873968,
+    "StagingAnomaly": 0.02149437052200609,
+    "FlightRiskAnomaly": 0.030606060606060637,
+    "ShadowITAnomaly": 0.017424242424242453
+  },
+  "active_evidence": [],
+  "evidence_ablation": [],
+  "inference_stats": {
+    "strategy": "min-degree",
+    "induced_width": 4,
+    "max_factor_size": 48,
+    "runtime_ms": 1.58
+  },
+  "llm_explanation": "[LLM Explanation \u2014 Template Mode (no API key set)]\nThe Bayesian Network has estimated a probabilistic insider threat risk score based on the observed behavioural evidence listed in the report above. The risk level and threat hypotheses are derived from the posterior distributions computed via exact Variable Elimination. This is a probabilistic assessment; it does not constitute proof of malicious intent. A security team should investigate the flagged evidence items to determine whether the observed behaviour has a legitimate business explanation."
+}

@@ -1,0 +1,84 @@
+{
+  "user": "INSIDER_0010",
+  "day": "2026-02-11",
+  "risk": {
+    "posterior": {
+      "Low": 0.19607208159132636,
+      "Medium": 0.11381758305967282,
+      "High": 0.6901103353490007
+    },
+    "level": "High",
+    "p_high": 0.6901103353490007
+  },
+  "threats": {
+    "DataExfiltration": {
+      "probability": 0.453122746920841,
+      "description": "Data Exfiltration (data theft via USB/email/cloud)"
+    },
+    "UnauthorizedAccess": {
+      "probability": 0.11778796089679161,
+      "description": "Unauthorized Access (credential misuse / masquerade)"
+    },
+    "ITSabotage": {
+      "probability": 0.09784961488255547,
+      "description": "ITSabotage"
+    },
+    "IPTheft": {
+      "probability": 0.635702703074414,
+      "description": "IPTheft"
+    }
+  },
+  "top_threat": "IPTheft",
+  "behavioral_indicators": {
+    "AuthAnomaly": 0.028203781512605053,
+    "DataAccessAnomaly": 0.3466393722279085,
+    "DataMovementAnomaly": 0.019805527123848532,
+    "CommunicationAnomaly": 0.36593406593406597,
+    "RemovableMediaAnomaly": 0.015046059365404263,
+    "TimeBasedAnomaly": 0.17223214285714294,
+    "StagingAnomaly": 0.02149437052200609,
+    "FlightRiskAnomaly": 0.7922727272727272,
+    "ShadowITAnomaly": 0.017424242424242453
+  },
+  "active_evidence": [
+    {
+      "node": "FileAccessCount",
+      "description": "High number of file access events"
+    },
+    {
+      "node": "ExternalEmail",
+      "description": "Emails sent to external (non-organisation) addresses"
+    },
+    {
+      "node": "AfterHoursEmail",
+      "description": "AfterHoursEmail"
+    }
+  ],
+  "evidence_ablation": [
+    {
+      "node": "ExternalEmail",
+      "delta_p_high": 0.2572,
+      "p_high_without": 0.4329,
+      "description": "Emails sent to external (non-organisation) addresses"
+    },
+    {
+      "node": "FileAccessCount",
+      "delta_p_high": 0.0817,
+      "p_high_without": 0.6084,
+      "description": "High number of file access events"
+    },
+    {
+      "node": "AfterHoursEmail",
+      "delta_p_high": 0.0,
+      "p_high_without": 0.6901,
+      "description": "AfterHoursEmail"
+    }
+  ],
+  "inference_stats": {
+    "strategy": "min-degree",
+    "induced_width": 4,
+    "max_factor_size": 48,
+    "runtime_ms": 1.47
+  },
+  "llm_explanation": "[LLM Explanation \u2014 Template Mode (no API key set)]\nThe Bayesian Network has estimated a probabilistic insider threat risk score based on the observed behavioural evidence listed in the report above. The risk level and threat hypotheses are derived from the posterior distributions computed via exact Variable Elimination. This is a probabilistic assessment; it does not constitute proof of malicious intent. A security team should investigate the flagged evidence items to determine whether the observed behaviour has a legitimate business explanation."
+}
