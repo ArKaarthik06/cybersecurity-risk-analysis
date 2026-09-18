@@ -9,7 +9,7 @@ Provides REST API endpoints for:
   - Real-time Log Evidence Extraction & BN Risk Analysis (/api/analyze)
   - Step-by-Step Mathematical Trace Generation (/api/math-trace)
 
-Serves the front-end Antigravity IDE-style web dashboard from /static.
+Serves the front-end CyberGuard web dashboard from /static.
 """
 
 import os
@@ -18,12 +18,14 @@ import json
 import traceback
 import numpy as np
 import pandas as pd
+from typing import Dict, Any, List, Optional, Tuple
 from flask import Flask, request, jsonify, send_from_directory
 
 # Project imports
 from cert_preprocessing import EVIDENCE_NODES, CERTPreprocessor
 from cert_bn_builder import (
-    CERTCPTBuilder, BEHAVIORAL_NODES, THREAT_NODES, RISK_NODE, RISK_LABELS, CERT_EXPERT_PRIORS
+    CERTCPTBuilder, BEHAVIORAL_NODES, THREAT_NODES, RISK_NODE, RISK_LABELS, CERT_EXPERT_PRIORS,
+    BEHAVIORAL_PARENTS, THREAT_PARENTS, RISK_PARENTS
 )
 from bayes_net import BayesianNetwork
 from inference_ve import VariableEliminationEngine
@@ -95,7 +97,7 @@ def get_schema():
     # Layer 2: Behavioral Indicators
     for node in BEHAVIORAL_NODES:
         spec = bn_params["nodes"].get(node, {})
-        parents = spec.get("noisy_or", {}).get("parents", [])
+        parents = spec.get("parents") or BEHAVIORAL_PARENTS.get(node, [])
         nodes_info.append({
             "id": node,
             "label": node,
@@ -108,7 +110,7 @@ def get_schema():
     # Layer 3: Threat Hypotheses
     for node in THREAT_NODES:
         spec = bn_params["nodes"].get(node, {})
-        parents = spec.get("noisy_or", {}).get("parents", [])
+        parents = spec.get("parents") or THREAT_PARENTS.get(node, [])
         nodes_info.append({
             "id": node,
             "label": node,
@@ -120,7 +122,7 @@ def get_schema():
         
     # Layer 4: Overall Risk
     spec = bn_params["nodes"].get(RISK_NODE, {})
-    parents = spec.get("cpt", {}).get("parents", THREAT_NODES)
+    parents = spec.get("parents") or RISK_PARENTS
     nodes_info.append({
         "id": RISK_NODE,
         "label": RISK_NODE,

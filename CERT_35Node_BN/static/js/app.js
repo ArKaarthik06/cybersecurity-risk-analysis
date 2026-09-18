@@ -33,7 +33,10 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById(targetTab).classList.add("active");
 
         if (targetTab === "tab-network" && networkGraph) {
-          networkGraph.fit();
+          setTimeout(() => {
+            networkGraph.redraw();
+            networkGraph.fit({ animation: { duration: 300, easingFunction: "easeInOutQuad" } });
+          }, 60);
         }
       });
     });
@@ -142,24 +145,44 @@ document.addEventListener("DOMContentLoaded", () => {
     const options = {
       layout: {
         hierarchical: {
+          enabled: true,
           direction: "LR", // Left-to-Right layout
           sortMethod: "directed",
-          levelSeparation: 220,
-          nodeSpacing: 60
+          levelSeparation: 240,
+          nodeSpacing: 45,
+          treeSpacing: 70,
+          blockShifting: true,
+          edgeMinimization: true,
+          parentCentralization: true
         }
       },
       physics: {
+        enabled: true,
         hierarchicalRepulsion: {
-          centralGravity: 0.0,
-          springLength: 100,
-          springConstant: 0.01,
-          nodeDistance: 80
+          centralGravity: 0.3,
+          springLength: 120,
+          springConstant: 0.05,
+          nodeDistance: 85,
+          damping: 0.1
+        },
+        stabilization: {
+          iterations: 150,
+          fit: true
         }
       },
-      interaction: { hover: true, tooltipDelay: 100 }
+      interaction: {
+        hover: true,
+        tooltipDelay: 100,
+        navigationButtons: true,
+        keyboard: true
+      }
     };
 
     networkGraph = new vis.Network(container, data, options);
+    networkGraph.once("stabilizationIterationsDone", () => {
+      networkGraph.setOptions({ physics: { enabled: false } });
+      networkGraph.fit({ animation: { duration: 300, easingFunction: "easeInOutQuad" } });
+    });
   }
 
   // ------------------------------------------------------------------------

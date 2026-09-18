@@ -359,15 +359,48 @@ Remember: You are ONLY allowed to reference the information above. Do not add ex
 
         # ---- Gemini ----
         gemini_key = os.environ.get("GEMINI_API_KEY", "")
+        if not gemini_key:
+            for env_path in [".env", os.path.join("..", ".env"), os.path.join(os.path.dirname(__file__), ".env")]:
+                if os.path.exists(env_path):
+                    try:
+                        with open(env_path) as f:
+                            for line in f:
+                                if line.strip().startswith("GEMINI_API_KEY="):
+                                    gemini_key = line.strip().split("=", 1)[1].strip().strip("\"'")
+                                    os.environ["GEMINI_API_KEY"] = gemini_key
+                                    break
+                    except Exception:
+                        pass
+                if gemini_key:
+                    break
         if gemini_key:
-            try:
-                import google.generativeai as genai
-                genai.configure(api_key=gemini_key)
-                model    = genai.GenerativeModel("gemini-1.5-flash")
-                response = model.generate_content(prompt)
-                return response.text.strip()
-            except Exception as e:
-                print(f"  [LLM] Gemini call failed: {e}")
+            import urllib.request
+            import json
+            for model_name in ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-3.5-flash"]:
+                try:
+                    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent"
+                    payload = json.dumps({
+                        "contents": [{"parts": [{"text": prompt}]}],
+                        "generationConfig": {
+                            "maxOutputTokens": max_tokens,
+                            "temperature": 0.2
+                        }
+                    }).encode("utf-8")
+                    req = urllib.request.Request(
+                        url,
+                        data=payload,
+                        headers={
+                            "Content-Type": "application/json",
+                            "x-goog-api-key": gemini_key
+                        }
+                    )
+                    with urllib.request.urlopen(req, timeout=15) as resp:
+                        res = json.loads(resp.read().decode("utf-8"))
+                        text = res.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+                        if text:
+                            return text.strip()
+                except Exception as e:
+                    continue
 
         # ---- Fallback: structured template ----
         return self._template_explanation_from_prompt(prompt)

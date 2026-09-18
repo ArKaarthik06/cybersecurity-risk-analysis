@@ -10,7 +10,7 @@ Step 3: Variable Elimination Process (Ancestor Pruning, Active Factors, Eliminat
 Step 4: Decision Network Expected Utility Maximization
 """
 
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Tuple
 import copy
 from cert_bn_builder import (
     EVIDENCE_NODES, BEHAVIORAL_NODES, THREAT_NODES, RISK_NODE,
