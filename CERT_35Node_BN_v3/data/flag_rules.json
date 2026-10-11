@@ -1,0 +1,281 @@
+{
+  "AfterHoursLogin": {
+    "feat": "after_hours_logon_count",
+    "rule": [
+      "zq",
+      0.05,
+      0.8056136160047775
+    ],
+    "tpr": 0.08592132505175984,
+    "fpr": 0.02432595750624774,
+    "gain": 0.04937994395113611
+  },
+  "UnusualLoginFreq": {
+    "feat": "logon_count",
+    "rule": [
+      "zq",
+      0.05,
+      0.0
+    ],
+    "tpr": 0.10559006211180125,
+    "fpr": 0.047012167533607235,
+    "gain": 0.02905448889048988
+  },
+  "WeekendLogin": {
+    "feat": "weekend_logon_count",
+    "rule": [
+      "q",
+      0.9995,
+      3.0
+    ],
+    "tpr": 0.0,
+    "fpr": 0.00032187635696695303,
+    "gain": 0.0
+  },
+  "HighMachineCount": {
+    "feat": "machine_count",
+    "rule": [
+      "q",
+      0.995,
+      6.0
+    ],
+    "tpr": 0.006211180124223602,
+    "fpr": 0.0002004135807530085,
+    "gain": 0.017062652182531994
+  },
+  "DeviceConnectActivity": {
+    "feat": "device_connect_count",
+    "rule": [
+      "or",
+      [
+        "zq",
+        0.005,
+        1.611227232009555
+      ],
+      [
+        "ctx",
+        2,
+        14
+      ]
+    ],
+    "tpr": 0.2670807453416149,
+    "fpr": 0.0030183499889165216,
+    "gain": 0.9727850311545425
+  },
+  "DeviceAfterHours": {
+    "feat": "after_hours_device_count",
+    "rule": [
+      "zq",
+      0.05,
+      0.0
+    ],
+    "tpr": 0.3612836438923395,
+    "fpr": 0.045955441380545914,
+    "gain": 0.4890222573034232
+  },
+  "FileAccessCount": {
+    "feat": "file_activity_count",
+    "rule": [
+      "zq",
+      0.05,
+      0.6063375533747846
+    ],
+    "tpr": 0.32298136645962733,
+    "fpr": 0.04965094634685518,
+    "gain": 0.3756068625681427
+  },
+  "FileCopyToRemovable": {
+    "feat": "file_copy_to_removable_count",
+    "rule": [
+      "zq",
+      0.05,
+      0.7131905894792492
+    ],
+    "tpr": 0.37888198757763975,
+    "fpr": 0.04891913312016616,
+    "gain": 0.5112480802425414
+  },
+  "ArchiveCreation": {
+    "feat": "archive_activity_count",
+    "rule": [
+      "rare",
+      0.1,
+      null
+    ],
+    "tpr": 0.07246376811594203,
+    "fpr": 0.00534436215341356,
+    "gain": 0.12528009760849773
+  },
+  "ExeActivity": {
+    "feat": "exe_activity_count",
+    "rule": [
+      "rare",
+      0.02,
+      null
+    ],
+    "tpr": 0.020703933747412008,
+    "fpr": 0.0014180779122978024,
+    "gain": 0.03773267538684577
+  },
+  "UnusualFileTypes": {
+    "feat": "unusual_file_activity_count",
+    "rule": [
+      "q",
+      0.9995,
+      0.0
+    ],
+    "tpr": 0.0,
+    "fpr": 0.0,
+    "gain": 0.0
+  },
+  "ExternalEmail": {
+    "feat": "external_email_count",
+    "rule": [
+      "or",
+      [
+        "zq",
+        0.005,
+        2.3086961172317895
+      ],
+      [
+        "ctx",
+        1,
+        14
+      ]
+    ],
+    "tpr": 0.14285714285714285,
+    "fpr": 0.03540639926636483,
+    "gain": 0.09860333632333919
+  },
+  "UnusualEmailVolume": {
+    "feat": "email_count",
+    "rule": [
+      "or",
+      [
+        "zq",
+        3e-05,
+        2.0
+      ],
+      [
+        "ctx",
+        1,
+        30
+      ]
+    ],
+    "tpr": 0.21739130434782608,
+    "fpr": 5.769481870162365e-05,
+    "gain": 1.59509833202076
+  },
+  "AfterHoursEmail": {
+    "feat": "after_hours_email_count",
+    "rule": [
+      "q",
+      0.9995,
+      21.0
+    ],
+    "tpr": 0.0,
+    "fpr": 0.0004919242436664754,
+    "gain": 0.0
+  },
+  "ExternalLargeEmail": {
+    "feat": "external_large_email_count",
+    "rule": [
+      "q",
+      0.9995,
+      0.0
+    ],
+    "tpr": 0.0,
+    "fpr": 0.0,
+    "gain": 0.0
+  },
+  "UnusualWebActivity": {
+    "feat": "web_activity_count",
+    "rule": [
+      "zq",
+      0.0001,
+      0.0
+    ],
+    "tpr": 0.7432712215320911,
+    "fpr": 6.984109632301811e-05,
+    "gain": 6.524335325161821
+  },
+  "AfterHoursWeb": {
+    "feat": "after_hours_web_count",
+    "rule": [
+      "zq",
+      0.05,
+      1.8611174982754655
+    ],
+    "tpr": 0.10662525879917184,
+    "fpr": 0.04991512788512051,
+    "gain": 0.0262782827357951
+  },
+  "CloudStorageAccess": {
+    "feat": "cloud_storage_count",
+    "rule": [
+      "rare",
+      0.05,
+      null
+    ],
+    "tpr": 0.007246376811594203,
+    "fpr": 0.007038767881598086,
+    "gain": 3.546089404633682e-05
+  },
+  "JobSearchActivity": {
+    "feat": "job_search_count",
+    "rule": [
+      "or",
+      [
+        "rare",
+        0.1,
+        null
+      ],
+      [
+        "ctx",
+        5,
+        14
+      ]
+    ],
+    "tpr": 0.3250517598343685,
+    "fpr": 0.035834555552518986,
+    "gain": 0.4765094893471663
+  },
+  "HighDataMovement": {
+    "feat": "email_size_total",
+    "rule": [
+      "or",
+      [
+        "zq",
+        0.01,
+        2.8756258387963043
+      ],
+      [
+        "ctx",
+        3,
+        14
+      ]
+    ],
+    "tpr": 0.2080745341614907,
+    "fpr": 0.017851991534044497,
+    "gain": 0.34129472428865393
+  },
+  "HighFileCopyActivity": {
+    "feat": "after_hours_file_copy",
+    "rule": [
+      "or",
+      [
+        "zq",
+        0.02,
+        1.9018415719446646
+      ],
+      [
+        "ctx",
+        2,
+        14
+      ]
+    ],
+    "tpr": 0.2577639751552795,
+    "fpr": 0.024599248752729116,
+    "gain": 0.40345042905293016
+  }
+}

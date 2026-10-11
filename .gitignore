@@ -69,3 +69,7 @@ NUSW-NB15 Dataset.zip
 
 # Exclude raw top-level UNSW data folder (keep CERT_35Node_BN/data)
 /data/
+
+# Cache and large pickle files (>100MB)
+*.pkl
+**/data/cache/

@@ -1,0 +1,22 @@
+node,feature,rule,TPR_attack,FPR_normal
+AfterHoursLogin,after_hours_logon_count,z>0.81,0.086,0.0243
+UnusualLoginFreq,logon_count,z>0.00,0.106,0.047
+WeekendLogin,weekend_logon_count,q 0.9995,0.0,0.0003
+HighMachineCount,machine_count,q 0.995,0.006,0.0002
+DeviceConnectActivity,device_connect_count,zq OR ctx>=2/14d,0.267,0.003
+DeviceAfterHours,after_hours_device_count,z>0.00,0.361,0.046
+FileAccessCount,file_activity_count,z>0.61,0.323,0.0497
+FileCopyToRemovable,file_copy_to_removable_count,z>0.71,0.379,0.0489
+ArchiveCreation,archive_activity_count,rare 0.1,0.072,0.0053
+ExeActivity,exe_activity_count,rare 0.02,0.021,0.0014
+UnusualFileTypes,unusual_file_activity_count,q 0.9995,0.0,0.0
+ExternalEmail,external_email_count,zq OR ctx>=1/14d,0.143,0.0354
+UnusualEmailVolume,email_count,zq OR ctx>=1/30d,0.217,0.0001
+AfterHoursEmail,after_hours_email_count,q 0.9995,0.0,0.0005
+ExternalLargeEmail,external_large_email_count,q 0.9995,0.0,0.0
+UnusualWebActivity,web_activity_count,z>0.00,0.743,0.0001
+AfterHoursWeb,after_hours_web_count,z>1.86,0.107,0.0499
+CloudStorageAccess,cloud_storage_count,rare 0.05,0.007,0.007
+JobSearchActivity,job_search_count,rare OR ctx>=5/14d,0.325,0.0358
+HighDataMovement,email_size_total,zq OR ctx>=3/14d,0.208,0.0179
+HighFileCopyActivity,after_hours_file_copy,zq OR ctx>=2/14d,0.258,0.0246

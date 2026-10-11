@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en" data-ui="classic">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CERT Insider Threat Analyzer — 35-Node Probabilistic Bayesian Network</title>
+  <meta name="description" content="Probabilistic insider threat assessment using a 35-node Bayesian Network with Variable Elimination, Decision Networks, and LLM-powered explanations.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Vis.js Network Visualization -->
+  <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+
+  <!-- KaTeX LaTeX Math Renderer -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+    onload="renderKaTexOnLoad()"></script>
+
+  <!-- Marked.js for Markdown rendering in LLM output -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
+
+  <!-- HTML2PDF for report generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css" id="theme-stylesheet">
+</head>
+<body class="light-theme ui-classic">
+
+  <!-- =====================================================================
+       TOP NAVIGATION BAR
+  ====================================================================== -->
+  <header class="top-nav" id="top-nav">
+    <div class="nav-brand">
+      <i class="fa-solid fa-shield-halved brand-icon"></i>
+      <span class="brand-title">CERT Threat Analyzer</span>
+      <span class="badge-sub">Streamlit / Flask UI · 35-Node BN</span>
+    </div>
+
+    <div class="nav-tabs" id="main-nav-tabs">
+      <button class="nav-tab active" data-tab="tab-network" id="nav-tab-network">
+        <i class="fa-solid fa-diagram-project"></i> <span class="tab-label">Network DAG</span>
+      </button>
+      <button class="nav-tab" data-tab="tab-math" id="nav-tab-math">
+        <i class="fa-solid fa-calculator"></i> <span class="tab-label">Math Trace</span>
+      </button>
+      <button class="nav-tab" data-tab="tab-cpt" id="nav-tab-cpt">
+        <i class="fa-solid fa-table-cells"></i> <span class="tab-label">CPT Tables</span>
+      </button>
+      <button class="nav-tab" data-tab="tab-llm" id="nav-tab-llm">
+        <i class="fa-solid fa-robot"></i> <span class="tab-label">AI Analysis</span>
+        <span id="llm-tab-badge" class="nav-tab-badge" style="display:none;"></span>
+      </button>
+    </div>
+
+    <div class="nav-actions">
+      <div id="risk-badge" class="risk-badge risk-low">
+        <span class="risk-dot"></span>
+        <span id="risk-level-text">LOW RISK (16.5%)</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- =====================================================================
+       MAIN APP LAYOUT
+  ====================================================================== -->
+  <div class="app-container" id="app-container">
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         LEFT SIDEBAR
+    ═══════════════════════════════════════════════════════════════════ -->
+    <aside class="sidebar-panel" id="sidebar-panel">
+
+      <!-- Header -->
+      <div class="panel-header">
+        <h3><i class="fa-solid fa-sliders"></i> Evidence Control</h3>
+        <span class="badge-live"><i class="fa-solid fa-circle"></i> VE Engine</span>
+      </div>
+
+      <!-- Sample Selector -->
+      <div class="sample-picker-box">
+        <label for="sample-select"><i class="fa-solid fa-vial"></i> Load Preset Scenario</label>
+        <select id="sample-select" class="form-select">
+          <option value="">— Choose Sample User Log —</option>
+        </select>
+      </div>
+
+      <!-- Evidence Accordion -->
+      <div class="evidence-toggle-accordion">
+        <div class="accordion-header" id="evidence-accordion-btn">
+          <span><i class="fa-solid fa-toggle-on"></i> Active Evidence
+            (<span id="active-ev-count">0</span> active)
+          </span>
+          <i class="fa-solid fa-chevron-down accordion-icon" id="acc-icon"></i>
+        </div>
+        <div class="accordion-body" id="evidence-checkbox-grid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- File Upload Zone -->
+      <div class="log-upload-zone">
+        <div class="upload-box" id="drop-zone">
+          <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+          <span class="upload-title">Upload Log / Evidence File</span>
+          <span class="upload-sub">Supports CSV, JSON, .log, .txt</span>
+          <button class="btn btn-secondary btn-sm" id="upload-btn">
+            <i class="fa-solid fa-folder-open"></i> Browse Files
+          </button>
+          <input type="file" id="file-input" accept=".csv,.json,.txt,.log" hidden>
+        </div>
+        <div id="upload-status" class="upload-status-bar" style="display:none;">
+          <i class="fa-solid fa-check-circle" style="color:#10b981;"></i>
+          <span id="upload-status-msg">File parsed successfully</span>
+        </div>
+        <button id="btn-run-analysis" class="btn btn-primary btn-block">
+          <i class="fa-solid fa-play"></i> Run Threat Inference
+        </button>
+      </div>
+
+      <!-- Inference Results Summary (populates after analysis) -->
+      <div class="results-panel" id="results-panel" style="display:none;">
+        <div class="results-header">
+          <i class="fa-solid fa-chart-bar"></i> Inference Results
+        </div>
+        <div id="results-body">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         MAIN CANVAS (Tabbed)
+    ═══════════════════════════════════════════════════════════════════ -->
+    <main class="main-canvas" id="main-canvas">
+
+      <!-- ─────────────────────────────────────────────────────────────
+           TAB 1: Network DAG Visualization
+      ───────────────────────────────────────────────────────────── -->
+      <div class="canvas-tab active" id="tab-network">
+        <div class="canvas-toolbar">
+          <div class="toolbar-title">
+            <h4><i class="fa-solid fa-circle-nodes"></i> Interactive Bayesian Network DAG</h4>
+            <span class="text-muted text-sm">Nodes glow upon active threat propagation · click to inspect</span>
+          </div>
+          <div class="toolbar-controls">
+            <button class="btn btn-icon" id="btn-fit-graph" title="Fit Graph">
+              <i class="fa-solid fa-expand"></i>
+            </button>
+            <button class="btn btn-icon" id="btn-physics-toggle" title="Toggle Physics">
+              <i class="fa-solid fa-atom"></i>
+            </button>
+            <button class="btn btn-icon" id="btn-reset-highlight" title="Reset Highlighting">
+              <i class="fa-solid fa-rotate-left"></i>
+            </button>
+          </div>
+        </div>
+
+        <div id="network-container"></div>
+
+        <!-- Node tooltip / inspector -->
+        <div id="node-tooltip" class="node-tooltip" style="display:none;">
+          <div class="tooltip-header">
+            <span id="tooltip-name">Node</span>
+            <span id="tooltip-layer" class="tooltip-layer"></span>
+          </div>
+          <div id="tooltip-body" class="tooltip-body"></div>
+        </div>
+
+        <div class="graph-legend">
+          <span class="legend-item"><span class="dot dot-layer1"></span> Layer 1: Observable Evidence (21)</span>
+          <span class="legend-item"><span class="dot dot-layer2"></span> Layer 2: Behavioral Indicators (9)</span>
+          <span class="legend-item"><span class="dot dot-layer3"></span> Layer 3: Threat Hypotheses (4)</span>
+          <span class="legend-item"><span class="dot dot-layer4"></span> Layer 4: Overall Risk (1)</span>
+          <span class="legend-item"><span class="dot dot-active"></span> Active / Evidence</span>
+        </div>
+      </div>
+
+      <!-- ─────────────────────────────────────────────────────────────
+           TAB 2: Step-by-Step Math Trace
+      ───────────────────────────────────────────────────────────── -->
+      <div class="canvas-tab" id="tab-math">
+        <div class="canvas-toolbar">
+          <div class="toolbar-title">
+            <h4><i class="fa-solid fa-square-root-variable"></i> Step-by-Step Mathematical Calculation Breakdown</h4>
+            <span class="text-muted text-sm">Prior → Noisy-OR → Variable Elimination → Decision Network → Final Risk</span>
+          </div>
+          <div class="toolbar-controls">
+            <button class="btn btn-icon" id="btn-export-math" title="Export Math Trace">
+              <i class="fa-solid fa-download"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="math-trace-scroll-area" id="math-trace-container">
+          <div class="math-placeholder" id="math-placeholder">
+            <i class="fa-solid fa-calculator placeholder-icon"></i>
+            <p>Run threat inference to see the full step-by-step mathematical trace.</p>
+            <span class="text-muted text-sm">Variable Elimination · Noisy-OR · Decision Network · KaTeX Rendered</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─────────────────────────────────────────────────────────────
+           TAB 3: CPT Parameters
+      ───────────────────────────────────────────────────────────── -->
+      <div class="canvas-tab" id="tab-cpt">
+        <div class="canvas-toolbar">
+          <div class="toolbar-title">
+            <h4><i class="fa-solid fa-table"></i> Conditional Probability Tables &amp; Noisy-OR Parameters</h4>
+          </div>
+        </div>
+        <div class="cpt-scroll-area" id="cpt-container">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- ─────────────────────────────────────────────────────────────
+           TAB 4: LLM AI Analysis
+      ───────────────────────────────────────────────────────────── -->
+      <div class="canvas-tab" id="tab-llm">
+        <div class="canvas-toolbar">
+          <div class="toolbar-title">
+            <h4><i class="fa-solid fa-brain"></i> AI-Powered Threat Analysis</h4>
+            <span class="text-muted text-sm">GPT-4 powered technical analysis via OpenRouter</span>
+          </div>
+          <div class="toolbar-controls" id="llm-status-bar" style="display:flex;align-items:center;gap:0.75rem;">
+            <button class="btn-pdf-export" id="btn-export-pdf" title="Export Professional PDF Report" style="display:none;">
+              <i class="fa-solid fa-file-pdf"></i>
+              <span>Export PDF Report</span>
+            </button>
+            <span class="llm-status-idle" id="llm-status-dot">
+              <i class="fa-solid fa-circle"></i> Ready
+            </span>
+          </div>
+        </div>
+
+        <div class="llm-scroll-area" id="llm-container">
+          <div class="llm-placeholder" id="llm-placeholder">
+            <div class="llm-placeholder-icon">
+              <i class="fa-solid fa-robot"></i>
+            </div>
+            <h3>Threat Analyst AI</h3>
+            <p>Run an inference first — the AI will provide a detailed technical analysis of the Bayesian Network results, explaining the math, the threat vectors, and recommended security actions.</p>
+            <div class="llm-features-list">
+              <div class="llm-feature"><i class="fa-solid fa-check"></i> Technical probabilistic explanation</div>
+              <div class="llm-feature"><i class="fa-solid fa-check"></i> Noisy-OR math interpretation</div>
+              <div class="llm-feature"><i class="fa-solid fa-check"></i> Variable Elimination step walkthrough</div>
+              <div class="llm-feature"><i class="fa-solid fa-check"></i> Decision network utility analysis</div>
+              <div class="llm-feature"><i class="fa-solid fa-check"></i> Actionable security recommendations</div>
+            </div>
+          </div>
+
+          <div id="llm-output" class="llm-output" style="display:none;">
+            <div class="llm-header">
+              <div class="llm-avatar"><i class="fa-solid fa-robot"></i></div>
+              <div class="llm-meta">
+                <span class="llm-agent-name">CERT Threat Analyst AI</span>
+                <span class="llm-model-badge">GPT-4 · OpenRouter</span>
+              </div>
+              <span id="llm-timestamp" class="llm-timestamp"></span>
+            </div>
+            <div id="llm-content" class="llm-content"></div>
+            <div id="llm-cursor" class="llm-cursor">▋</div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- =====================================================================
+       NEO UI OVERLAY — Terminal Mode
+  ====================================================================== -->
+  <div id="neo-terminal-overlay" class="neo-terminal-overlay" style="display:none;">
+    <!-- Neo UI renders inside main canvas tabs, no overlay needed; 
+         CSS class on body handles theme switching -->
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    // KaTeX deferred callback
+    function renderKaTexOnLoad() {
+      // Will be triggered from app.js as needed
+      window.__katexReady = true;
+    }
+  </script>
+  <script src="js/app.js"></script>
+</body>
+</html>

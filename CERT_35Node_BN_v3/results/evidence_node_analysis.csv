@@ -1,0 +1,22 @@
+node,feature,base_mean,base_active_pct,users_constant_pct,rule,fires_attack,fires_normal,TPR,FPR,LR,P_High_alone
+AfterHoursLogin,after_hours_logon_count,0.96,86.0,58,z>0.81,83,8011,0.086,0.02433,4.0,0.003
+UnusualLoginFreq,logon_count,1.41,100.0,54,z>0.00,102,15482,0.106,0.04701,2.0,0.002
+WeekendLogin,weekend_logon_count,0.04,2.1,84,q 0.9995,0,106,0.0,0.00032,0.0,0.008
+HighMachineCount,machine_count,1.13,100.0,67,q 0.995,6,66,0.006,0.0002,31.0,0.018
+DeviceConnectActivity,device_connect_count,0.58,15.3,79,zq OR ctx>=2/14d,258,994,0.267,0.00302,88.0,0.152
+DeviceAfterHours,after_hours_device_count,0.12,6.9,79,z>0.00,349,15134,0.361,0.04596,8.0,0.004
+FileAccessCount,file_activity_count,1.32,12.9,79,z>0.61,312,16351,0.323,0.04965,7.0,0.003
+FileCopyToRemovable,file_copy_to_removable_count,1.19,12.8,79,z>0.71,366,16110,0.379,0.04892,8.0,0.006
+ArchiveCreation,archive_activity_count,0.07,4.7,79,rare 0.1,70,1760,0.072,0.00534,14.0,0.006
+ExeActivity,exe_activity_count,0.01,0.8,80,rare 0.02,20,467,0.021,0.00142,15.0,0.009
+UnusualFileTypes,unusual_file_activity_count,0.0,0.0,100,q 0.9995,0,0,0.0,0.0,0.0,0.01
+ExternalEmail,external_email_count,3.16,76.0,0,zq OR ctx>=1/14d,138,11660,0.143,0.03541,4.0,0.003
+UnusualEmailVolume,email_count,7.97,99.0,0,zq OR ctx>=1/30d,210,19,0.217,6e-05,3768.0,0.018
+AfterHoursEmail,after_hours_email_count,1.74,44.0,0,q 0.9995,0,162,0.0,0.00049,0.0,0.007
+ExternalLargeEmail,external_large_email_count,0.0,0.0,100,q 0.9995,0,0,0.0,0.0,0.0,0.758
+UnusualWebActivity,web_activity_count,86.17,99.9,78,z>0.00,718,23,0.743,7e-05,10642.0,0.853
+AfterHoursWeb,after_hours_web_count,18.53,95.8,0,z>1.86,103,16438,0.107,0.04992,2.0,0.002
+CloudStorageAccess,cloud_storage_count,1.22,24.7,15,rare 0.05,7,2318,0.007,0.00704,1.0,0.012
+JobSearchActivity,job_search_count,3.18,49.1,5,rare OR ctx>=5/14d,314,11801,0.325,0.03583,9.0,0.003
+HighDataMovement,email_size_total,239112.44,99.0,0,zq OR ctx>=3/14d,201,5879,0.208,0.01785,12.0,0.004
+HighFileCopyActivity,after_hours_file_copy,0.74,5.9,79,zq OR ctx>=2/14d,249,8101,0.258,0.0246,10.0,0.008
